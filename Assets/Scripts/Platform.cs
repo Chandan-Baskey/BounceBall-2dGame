@@ -33,11 +33,11 @@ public class Platform : MonoBehaviour
 
             if(mousePos.x < 0)
             {
-                rb.velocity = Vector2.left * speed * Time.deltaTime;
+                rb.velocity = Vector2.left * speed;
             }
             else
             {
-                rb.velocity = Vector2.right * speed * Time.deltaTime;
+                rb.velocity = Vector2.right * speed;
             }
         }
         else

@@ -8,8 +8,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     int score;
-    public Text textScore;
-    public GameObject gameStartPanel;
+    [SerializeField] private Text textScore;
+    [SerializeField] private GameObject gameStartPanel;
 
     private void Awake()
     {
@@ -41,4 +41,14 @@ public class GameManager : MonoBehaviour
         gameStartPanel.SetActive(false);
         textScore.gameObject.SetActive(true);
     }
+
+    private void StartGame()
+    {
+        SceneManager.LoadScene(1);
+    }
+    private void QuitGame()
+    {
+        Application.Quit();
+    }
+
 }
