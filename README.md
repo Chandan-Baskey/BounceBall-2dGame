@@ -15,7 +15,7 @@
 
 <br/>
 
-[image alt](https://github.com/Chandan-Baskey/Maze-Ball/blob/d78fd3be2c4b42164ea8757eb502daee167f8de0/GameView.png)
+![image alt](https://github.com/Chandan-Baskey/BounceBall-2dGame/blob/fd00e1efae74bb0fd3be0b40616a4f1f97cf6539/GameView%20(2).png)
 
 </div>
 
