@@ -42,13 +42,6 @@ public class GameManager : MonoBehaviour
         textScore.gameObject.SetActive(true);
     }
 
-    private void StartGame()
-    {
-        SceneManager.LoadScene(1);
-    }
-    private void QuitGame()
-    {
-        Application.Quit();
-    }
+    
 
 }
