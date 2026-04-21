@@ -15,7 +15,7 @@
 
 <br/>
 
-![Gameplay Screenshot](screenshot.png)
+![Gameplay Screenshot]([screenshot.png](https://github.com/Chandan-Baskey/BounceBall-2dGame/blob/ec62614f7e9582c825ea1d3bee2b506ff18934d9/GameView%20(2).png))
 
 </div>
 
