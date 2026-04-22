@@ -6,14 +6,14 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
+    public static GameManager instance; // Singleton instance for easy access from other scripts
     int score;
     [SerializeField] private Text textScore;
     [SerializeField] private GameObject gameStartPanel;
 
     private void Awake()
     {
-        instance = this;
+        instance = this; // Set the singleton instance
     }
     void Start()
     {

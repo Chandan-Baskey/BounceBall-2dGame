@@ -4,23 +4,24 @@ using UnityEngine;
 
 public class Ball : MonoBehaviour
 {
-    Rigidbody2D rb;
+    Rigidbody2D rb; // 
     public float bounceForce;
 
     [Header("Random Bounce Settings")]
     public float minAngle = 30f;   // Min angle from horizontal
     public float maxAngle = 150f;  // Max angle from horizontal
 
-    bool gameStarted = false;
+    bool gameStarted = false; // Track if the game has started to prevent bouncing before player input
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>(); 
+
     }
 
     void Update()
     {
-        if (!gameStarted)
+        if (!gameStarted)  // Wait for player input to start the game
         {
             if (Input.anyKeyDown)
             {
@@ -42,7 +43,7 @@ public class Ball : MonoBehaviour
     Vector2 GetRandomUpwardDirection()
     {
         float angle = Random.Range(minAngle, maxAngle);
-        float radian = angle * Mathf.Deg2Rad;
+        float radian = angle * Mathf.Deg2Rad; // Convert to radians for trig functions
         return new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)).normalized;
     }
 
