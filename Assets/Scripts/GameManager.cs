@@ -10,6 +10,9 @@ public class GameManager : MonoBehaviour
     int score;
     [SerializeField] private Text textScore;
     [SerializeField] private GameObject gameStartPanel;
+    [SerializeField] private GameObject rightTab;
+    [SerializeField] private GameObject leftTab;
+
 
     private void Awake()
     {
@@ -40,8 +43,14 @@ public class GameManager : MonoBehaviour
     {
         gameStartPanel.SetActive(false);
         textScore.gameObject.SetActive(true);
+        rightTab.SetActive(false);
+        leftTab.SetActive(false);
+    }
+    public void Back()
+    {
+        SceneManager.LoadScene(0);
     }
 
-    
+
 
 }
