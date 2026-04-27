@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject gameStartPanel;
     [SerializeField] private GameObject rightTab;
     [SerializeField] private GameObject leftTab;
+    [SerializeField] private GameObject back;
+   
 
 
     private void Awake()
@@ -45,6 +47,8 @@ public class GameManager : MonoBehaviour
         textScore.gameObject.SetActive(true);
         rightTab.SetActive(false);
         leftTab.SetActive(false);
+        back.SetActive(true);
+
     }
     public void Back()
     {
