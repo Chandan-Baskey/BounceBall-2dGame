@@ -15,7 +15,7 @@
 
 <br/>
 
-![image alt](https://github.com/Chandan-Baskey/BounceBall-2dGame/blob/fd00e1efae74bb0fd3be0b40616a4f1f97cf6539/GameView%20(2).png)
+![image alt](https://github.com/Chandan-Baskey/BounceBall-2dGame/blob/5ebc1c05752c23425790d06c28cca0b9607e0c9f/GameView1.png)
 
 </div>
 
