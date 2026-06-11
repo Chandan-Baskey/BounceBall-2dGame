@@ -1,4 +1,4 @@
-# 🎮 Bounce Ball 
+# 🎮 Bounce Ball 2D
 
 <div align="center">
 
