@@ -42,7 +42,7 @@
 
 ---
 
-## 🕹️ About the Game
+## 🕹️ About the Game Details 
 
 **Bounce Ball 2D** is a classic arcade-style game where your reflexes are everything. A ball bounces around the screen, and your only job is to keep it from falling — using a paddle you control with a tap or mouse click.
 
