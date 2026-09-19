@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -13,22 +11,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject rightTab;
     [SerializeField] private GameObject leftTab;
     [SerializeField] private GameObject back;
-   
 
+    public bool IsPlaying { get; private set; }
+    public bool PointerReleaseRequired { get; private set; }
 
     private void Awake()
     {
         instance = this; // Set the singleton instance
-    }
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
     public void Restart()
     {
@@ -43,6 +32,14 @@ public class GameManager : MonoBehaviour
     }
     public void GameStart()
     {
+        if (IsPlaying)
+        {
+            return;
+        }
+
+        IsPlaying = true;
+        // Do not let the pointer that starts the round also move the paddle.
+        PointerReleaseRequired = true;
         gameStartPanel.SetActive(false);
         textScore.gameObject.SetActive(true);
         rightTab.SetActive(false);
@@ -50,11 +47,13 @@ public class GameManager : MonoBehaviour
         back.SetActive(true);
 
     }
+    public void NotifyPointersReleased()
+    {
+        PointerReleaseRequired = false;
+    }
+
     public void Back()
     {
         SceneManager.LoadScene(0);
     }
-
-
-
 }

@@ -1,34 +1,56 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class Ball : MonoBehaviour
 {
-    Rigidbody2D rb; // 
-    public float bounceForce;
+    private Rigidbody2D rb;
+    private InputAction startAction;
+
+    [SerializeField] private float bounceForce = 10f;
 
     [Header("Random Bounce Settings")]
-    public float minAngle = 30f;   // Min angle from horizontal
-    public float maxAngle = 150f;  // Max angle from horizontal
+    [SerializeField] private float minAngle = 30f;
+    [SerializeField] private float maxAngle = 150f;
 
-    bool gameStarted = false; // Track if the game has started to prevent bouncing before player input
+    private bool gameStarted;
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>(); 
+        rb = GetComponent<Rigidbody2D>();
 
+        startAction = new InputAction("Start Game", InputActionType.Button);
+        startAction.AddBinding("<Mouse>/leftButton");
+        startAction.AddBinding("<Touchscreen>/primaryTouch/press");
+        startAction.AddBinding("<Keyboard>/space");
+        startAction.AddBinding("<Keyboard>/enter");
+        startAction.AddBinding("<Keyboard>/numpadEnter");
+        startAction.AddBinding("<Gamepad>/buttonSouth");
+        startAction.AddBinding("<Gamepad>/start");
     }
 
-    void Update()
+    private void OnEnable()
     {
-        if (!gameStarted)  // Wait for player input to start the game
+        startAction.Enable();
+    }
+
+    private void OnDisable()
+    {
+        startAction.Disable();
+    }
+
+    private void OnDestroy()
+    {
+        startAction.Dispose();
+    }
+
+    private void Update()
+    {
+        if (!gameStarted && startAction.WasPressedThisFrame())
         {
-            if (Input.anyKeyDown)
-            {
-                gameStarted = true;
-                StartBounce();
-                GameManager.instance.GameStart();
-            }
+            gameStarted = true;
+            GameManager.instance.GameStart();
+            StartBounce();
         }
     }
 
@@ -69,7 +91,7 @@ public class Ball : MonoBehaviour
                          / collision.collider.bounds.size.x;
 
         // Map hit position to angle (left hit = goes left, right hit = goes right)
-        // Center range: 60°-120°, edges can go as sharp as 30° or 150°
+        // Center range: 60ï¿½-120ï¿½, edges can go as sharp as 30ï¿½ or 150ï¿½
         float angle = Mathf.Lerp(150f, 30f, (hitPoint + 1f) / 2f);
 
         // Add slight randomness on top (+/- 15 degrees)
