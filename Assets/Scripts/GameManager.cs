@@ -48,6 +48,7 @@ public class GameManager : MonoBehaviour
     {
         if (instance != null && instance != this)
         {
+            enabled = false;
             Destroy(gameObject);
             return;
         }
@@ -78,20 +79,20 @@ public class GameManager : MonoBehaviour
 
     private void OnEnable()
     {
-        pauseAction.Enable();
-        confirmAction.Enable();
+        pauseAction?.Enable();
+        confirmAction?.Enable();
     }
 
     private void OnDisable()
     {
-        pauseAction.Disable();
-        confirmAction.Disable();
+        pauseAction?.Disable();
+        confirmAction?.Disable();
     }
 
     private void OnDestroy()
     {
-        pauseAction.Dispose();
-        confirmAction.Dispose();
+        pauseAction?.Dispose();
+        confirmAction?.Dispose();
 
         if (instance == this)
         {
@@ -118,7 +119,7 @@ public class GameManager : MonoBehaviour
     public void Restart()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void AddScore()
@@ -170,7 +171,7 @@ public class GameManager : MonoBehaviour
 
         if (startMessage != null)
         {
-            startMessage.text = $"GAME OVER\nSCORE {score}   BEST {bestScore}\nTAP OR PRESS R TO RESTART";
+            startMessage.text = $"GAME OVER\n{score}   BEST {bestScore}\nTAP / R TO RESTART";
         }
     }
 
@@ -187,7 +188,7 @@ public class GameManager : MonoBehaviour
 
         if (startMessage != null)
         {
-            startMessage.text = "PAUSED\nPRESS ESC, P, OR START TO RESUME";
+            startMessage.text = "PAUSED\nTAP OR PRESS ESC / P / START";
         }
     }
 
