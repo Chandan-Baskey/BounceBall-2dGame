@@ -64,7 +64,7 @@ Simple to pick up. Impossible to master. Every bounce counts.
 
 | Feature | Description |
 |---|---|
-| 🖱️ Touch & Mouse Input | Supports both touch (mobile) and mouse (desktop) controls |
+| 🎮 Unified Input | Supports multitouch, mouse, keyboard, D-pad, and gamepad stick controls |
 | 🏓 Dynamic Paddle | Smooth, physics-driven paddle movement |
 | 📊 Live Score Tracking | Score updates in real-time on every bounce |
 | 🔄 Instant Restart | One-tap restart to get back into the action |
@@ -115,33 +115,12 @@ BounceBall2D/
 
 Handles all paddle input and movement using Unity's **Rigidbody2D** physics system.
 
-```csharp
-public class Platform : MonoBehaviour
-{
-    Rigidbody2D rb;
-    public float speed;        // Configurable speed in Inspector
-
-    void TouchMove()
-    {
-        if (Input.GetMouseButton(0))
-        {
-            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-            // Move LEFT if tap is on left side of screen, RIGHT otherwise
-            rb.velocity = (mousePos.x < 0) ? Vector2.left * speed : Vector2.right * speed;
-        }
-        else
-        {
-            rb.velocity = Vector2.zero;    // Stop when not pressing
-        }
-    }
-}
-```
-
 **Key Behaviour:**
-- Converts screen tap position to world coordinates
-- Moves paddle left if tap is on the left half of screen
-- Moves paddle right if tap is on the right half
+- Uses Unity's Input System for mouse, keyboard, controller, and touch
+- Splits touch and mouse input using the actual screen midpoint
+- Tracks each active touch by touch ID and ignores touches over UI
+- Cancels movement when left and right are pressed simultaneously
+- Applies Rigidbody2D velocity during `FixedUpdate`
 - Stops instantly when input is released
 
 ---
@@ -233,6 +212,11 @@ File → Build Settings → PC, Mac & Linux Standalone → Build & Run
 | 📱 Mobile | Move paddle right | Tap right half of screen |
 | 🖥️ Desktop | Move paddle left | Hold left mouse button (left of center) |
 | 🖥️ Desktop | Move paddle right | Hold left mouse button (right of center) |
+| ⌨️ Keyboard | Move paddle | `A` / `D` or Left / Right arrows |
+| 🎮 Controller | Move paddle | Left stick or D-pad |
+| All | Start round | Tap/click, Space, Enter, gamepad South button, or Start |
+
+If left and right are requested at the same time—including two touches on opposite halves—the inputs cancel and the paddle stops. UI touches are never forwarded to paddle movement. The pointer used to start a round must be released before pointer movement becomes active.
 
 ---
 
@@ -285,16 +269,9 @@ The paddle also uses **Rigidbody2D** but is moved via `velocity` rather than `tr
 
 ### Input Detection
 
-Unity's `Input.GetMouseButton(0)` works for both:
-- **Mouse** clicks on desktop
-- **Touch** taps on mobile (Unity maps single-touch to mouse input automatically)
+The game uses Unity's **Input System**. Keyboard and controller bindings are represented by input actions. Mouse and touch positions remain in screen space and are compared with `Screen.width * 0.5f`, so the control split does not depend on the camera's world position.
 
-The tap position is converted from **Screen Space** → **World Space** using:
-```csharp
-Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-```
-
-This allows directional decision-making regardless of screen resolution or orientation.
+Every active touch is read separately with its touch ID. Before a pointer contributes movement, the EventSystem raycasts the pointer position against UI; pointers over buttons or other raycastable UI are rejected.
 
 ### Singleton Pattern
 

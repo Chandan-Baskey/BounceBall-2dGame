@@ -46,7 +46,8 @@ public class Ball : MonoBehaviour
 
     private void Update()
     {
-        if (!gameStarted && startAction.WasPressedThisFrame())
+        if (!gameStarted && GameManager.instance != null &&
+            GameManager.instance.State == GameState.Waiting && startAction.WasPressedThisFrame())
         {
             gameStarted = true;
             GameManager.instance.GameStart();
@@ -54,15 +55,14 @@ public class Ball : MonoBehaviour
         }
     }
 
-    void StartBounce()
+    private void StartBounce()
     {
-        rb.velocity = Vector2.zero; // Reset before launching
         Vector2 randomDirection = GetRandomUpwardDirection();
-        rb.AddForce(randomDirection * bounceForce, ForceMode2D.Impulse);
+        rb.velocity = randomDirection * bounceForce;
     }
 
     // Returns a random direction that always goes UPWARD
-    Vector2 GetRandomUpwardDirection()
+    private Vector2 GetRandomUpwardDirection()
     {
         float angle = Random.Range(minAngle, maxAngle);
         float radian = angle * Mathf.Deg2Rad; // Convert to radians for trig functions
@@ -71,36 +71,65 @@ public class Ball : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (GameManager.instance == null || GameManager.instance.State != GameState.Playing)
+        {
+            return;
+        }
+
         if (collision.gameObject.CompareTag("Respawn"))
         {
-            GameManager.instance.Restart();
+            rb.velocity = Vector2.zero;
+            rb.simulated = false;
+            GameManager.instance.EndGame();
         }
-        else if (collision.gameObject.CompareTag("Player"))
+        else if (collision.gameObject.CompareTag("Player") && IsValidPlatformHit(collision))
         {
             GameManager.instance.AddScore();
             BounceOffPlatform(collision);
         }
     }
 
-    void BounceOffPlatform(Collision2D collision)
+    private bool IsValidPlatformHit(Collision2D collision)
     {
-        rb.velocity = Vector2.zero; // Stop current velocity
+        if (transform.position.y <= collision.collider.bounds.center.y)
+        {
+            return false;
+        }
 
-        // Where on the platform did ball hit? (-1 = left edge, 1 = right edge)
-        float hitPoint = (transform.position.x - collision.transform.position.x)
-                         / collision.collider.bounds.size.x;
+        for (int i = 0; i < collision.contactCount; i++)
+        {
+            if (collision.GetContact(i).normal.y > 0.5f)
+            {
+                return true;
+            }
+        }
 
-        // Map hit position to angle (left hit = goes left, right hit = goes right)
-        // Center range: 60�-120�, edges can go as sharp as 30� or 150�
-        float angle = Mathf.Lerp(150f, 30f, (hitPoint + 1f) / 2f);
+        return false;
+    }
+
+    private void BounceOffPlatform(Collision2D collision)
+    {
+        Bounds platformBounds = collision.collider.bounds;
+        float normalizedHit = Mathf.InverseLerp(
+            platformBounds.min.x,
+            platformBounds.max.x,
+            transform.position.x);
+        float angle = Mathf.Lerp(maxAngle, minAngle, normalizedHit);
 
         // Add slight randomness on top (+/- 15 degrees)
         angle += Random.Range(-15f, 15f);
         angle = Mathf.Clamp(angle, minAngle, maxAngle); // Never go horizontal
 
         float radian = angle * Mathf.Deg2Rad;
-        Vector2 bounceDir = new Vector2(Mathf.Cos(radian), Mathf.Sin(radian));
+        Vector2 bounceDirection = new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)).normalized;
 
-        rb.AddForce(bounceDir * bounceForce, ForceMode2D.Impulse);
+        rb.velocity = bounceDirection * bounceForce;
+    }
+
+    private void OnValidate()
+    {
+        bounceForce = Mathf.Max(0.1f, bounceForce);
+        minAngle = Mathf.Clamp(minAngle, 5f, 89f);
+        maxAngle = Mathf.Clamp(maxAngle, 91f, 175f);
     }
 }

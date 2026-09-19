@@ -109,8 +109,8 @@ public class Platform : MonoBehaviour
         bool moveLeft = digitalLeft || analogValue < -StickDeadZone;
         bool moveRight = digitalRight || analogValue > StickDeadZone;
 
-        AddMouseInput(ref moveLeft, ref moveRight);
-        AddTouchInput(ref moveLeft, ref moveRight);
+        bool pointerInputActive = AddMouseInput(ref moveLeft, ref moveRight);
+        pointerInputActive |= AddTouchInput(ref moveLeft, ref moveRight);
 
         // Simultaneous left and right input intentionally cancel each other.
         if (moveLeft == moveRight)
@@ -118,7 +118,12 @@ public class Platform : MonoBehaviour
             return 0f;
         }
 
-        if (Mathf.Abs(analogValue) > StickDeadZone && !digitalLeft && !digitalRight)
+        if (pointerInputActive || digitalLeft || digitalRight)
+        {
+            return moveLeft ? -1f : 1f;
+        }
+
+        if (Mathf.Abs(analogValue) > StickDeadZone)
         {
             return Mathf.Clamp(analogValue, -1f, 1f);
         }
@@ -126,30 +131,32 @@ public class Platform : MonoBehaviour
         return moveLeft ? -1f : 1f;
     }
 
-    private void AddMouseInput(ref bool moveLeft, ref bool moveRight)
+    private bool AddMouseInput(ref bool moveLeft, ref bool moveRight)
     {
         if (!pointerPressAction.IsPressed())
         {
-            return;
+            return false;
         }
 
         Vector2 pointerPosition = pointerPositionAction.ReadValue<Vector2>();
         if (IsPointerOverUi(pointerPosition, -1))
         {
-            return;
+            return false;
         }
 
         SetScreenSide(pointerPosition, ref moveLeft, ref moveRight);
+        return true;
     }
 
-    private void AddTouchInput(ref bool moveLeft, ref bool moveRight)
+    private bool AddTouchInput(ref bool moveLeft, ref bool moveRight)
     {
         Touchscreen touchscreen = Touchscreen.current;
         if (touchscreen == null)
         {
-            return;
+            return false;
         }
 
+        bool acceptedTouch = false;
         foreach (UnityEngine.InputSystem.Controls.TouchControl touch in touchscreen.touches)
         {
             if (!touch.press.isPressed)
@@ -163,8 +170,11 @@ public class Platform : MonoBehaviour
             if (!IsPointerOverUi(position, touchId))
             {
                 SetScreenSide(position, ref moveLeft, ref moveRight);
+                acceptedTouch = true;
             }
         }
+
+        return acceptedTouch;
     }
 
     private static void SetScreenSide(Vector2 screenPosition, ref bool moveLeft, ref bool moveRight)
