@@ -5,7 +5,7 @@
 ![Bounce Ball 2D Banner](https://img.shields.io/badge/Unity-2D%20Game-black?style=for-the-badge&logo=unity&logoColor=white)
 ![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS%20%7C%20PC-orange?style=for-the-badge)
 ![Language](https://img.shields.io/badge/Language-C%23-blue?style=for-the-badge&logo=csharp)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+![License](https://img.shields.io/badge/License-Review%20Required-yellow?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge)
 
 <br/>
@@ -67,7 +67,9 @@ Simple to pick up. Impossible to master. Every bounce counts.
 | 🎮 Unified Input | Supports multitouch, mouse, keyboard, D-pad, and gamepad stick controls |
 | 🏓 Dynamic Paddle | Smooth, physics-driven paddle movement |
 | 📊 Live Score Tracking | Score updates in real-time on every bounce |
-| 🔄 Instant Restart | One-tap restart to get back into the action |
+| 🏆 Persistent Best Score | Best score is saved between sessions |
+| ⏸️ Pause & Resume | Supports keyboard, controller, and app focus changes |
+| 🔄 Game Over & Restart | Shows final score and supports tap/key restart |
 | 🚀 Game Start Screen | Clean "Tap to Start" panel before the game begins |
 | 📱 Cross-Platform | Runs on Android, iOS, and PC |
 
@@ -91,17 +93,14 @@ BounceBall2D/
 ├── Assets/
 │   ├── Scripts/
 │   │   ├── Platform.cs          # Paddle movement logic
-│   │   └── GameManager.cs       # Score, game state, restart logic
+│   │   ├── Ball.cs              # Launch, collision, and bounce logic
+│   │   ├── GameManager.cs       # State, score, pause, and persistence
+│   │   └── UIManager.cs         # Main-menu navigation
 │   │
 │   ├── Scenes/
-│   │   └── GameScene.unity      # Main game scene
-│   │
-│   ├── Sprites/
-│   │   ├── Ball.png             # Ball sprite
-│   │   └── Platform.png         # Paddle sprite
-│   │
-│   └── Prefabs/
-│       └── Ball.prefab          # Ball prefab (with Rigidbody2D + Collider)
+│   │   ├── MainScene.unity      # Main menu
+│   │   └── LvL.unity            # Gameplay
+│   └── Sprites/                 # Ball, paddle, and background art
 │
 ├── ProjectSettings/
 └── README.md
@@ -127,38 +126,14 @@ Handles all paddle input and movement using Unity's **Rigidbody2D** physics syst
 
 ### `GameManager.cs` — Game State & Score
 
-Manages the overall game loop: starting the game, tracking the score, and restarting the scene.
-
-```csharp
-public class GameManager : MonoBehaviour
-{
-    public static GameManager instance;   // Singleton pattern
-    int score;
-
-    public void AddScore()
-    {
-        score++;
-        textScore.text = score.ToString();
-    }
-
-    public void Restart()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
-
-    public void GameStart()
-    {
-        gameStartPanel.SetActive(false);    // Hide start panel
-        textScore.gameObject.SetActive(true); // Show score UI
-    }
-}
-```
+Manages the `Waiting`, `Playing`, `Paused`, and `GameOver` states, live score, persistent best score, restart flow, and application focus handling.
 
 **Key Behaviour:**
 - Uses a **Singleton** (`GameManager.instance`) for global access
-- `AddScore()` — call this from the Ball script whenever a bounce occurs
-- `Restart()` — reloads the active scene instantly
-- `GameStart()` — hides the intro panel and activates score display
+- Rejects score changes outside active gameplay
+- Saves a new best score with `PlayerPrefs`
+- Pauses automatically when the app loses focus
+- Shows final and best scores before restarting
 
 ---
 
@@ -215,6 +190,9 @@ File → Build Settings → PC, Mac & Linux Standalone → Build & Run
 | ⌨️ Keyboard | Move paddle | `A` / `D` or Left / Right arrows |
 | 🎮 Controller | Move paddle | Left stick or D-pad |
 | All | Start round | Tap/click, Space, Enter, gamepad South button, or Start |
+| Keyboard/controller | Pause/resume | `Esc`, `P`, or gamepad Start |
+| Mobile | Resume after focus pause | Tap the pause overlay |
+| All | Restart after game over | Tap/click, `R`, Space, Enter, or gamepad South button |
 
 If left and right are requested at the same time—including two touches on opposite halves—the inputs cancel and the paddle stops. UI touches are never forwarded to paddle movement. The pointer used to start a round must be released before pointer movement becomes active.
 
@@ -297,8 +275,7 @@ You can tweak the following directly in the **Unity Inspector** without changing
 **Want to add difficulty scaling?**  
 Increase ball speed over time by accessing the ball's `Rigidbody2D` and adding to its velocity magnitude after each `AddScore()` call.
 
-**Want a high score system?**  
-Use `PlayerPrefs.SetInt("HighScore", score)` inside `GameManager` to persist scores between sessions.
+The best score is already persisted with `PlayerPrefs` under the `BestScore` key.
 
 ---
 
@@ -325,7 +302,7 @@ Contributions, bug reports, and feature requests are welcome!
 
 ## 📄 License
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+No repository license file is currently included. Review the project code license and every third-party font/image license before redistribution or commercial release.
 
 ---
 
