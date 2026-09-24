@@ -142,7 +142,7 @@ Manages the `Waiting`, `Playing`, `Paused`, and `GameOver` states, live score, p
 ### Prerequisites
 
 - [Unity Hub](https://unity.com/download) installed
-- Unity Editor **2020.3 LTS or newer** (2D module required)
+- Unity Editor **2022.3.62f3** (the version recorded in `ProjectSettings/ProjectVersion.txt`; 2D module required)
 - Git (optional, for cloning)
 
 ### Installation
